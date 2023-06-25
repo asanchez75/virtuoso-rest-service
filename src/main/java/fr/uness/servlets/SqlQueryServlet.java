@@ -17,9 +17,10 @@ public class SqlQueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 			try {
+				String query = request.getParameter("sparql");
 				Connection conn = VirtuosoDatabase.getConnection();
 				Statement st = conn.createStatement();
-				ResultSet rs = st.executeQuery("select __id2in(s), __id2in(p), __ro2sq(o) from rdf_quad"); 	
+				ResultSet rs = st.executeQuery("sparql " + query); 	
 				while (rs.next()) {
 					String s =  rs.getString(1); 
 					String p =  rs.getString(2); 
