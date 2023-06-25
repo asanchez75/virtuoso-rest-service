@@ -1,43 +1,65 @@
 package fr.uness.servlets;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import java.util.UUID;
 
 //@WebServlet("/query")
 public class SqlQueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 			try {
-
+				
+				UUID uuid = UUID.randomUUID();
+				String separator = "|";
+			    File file = new File("/data/" + uuid.toString() + ".csv");
+			    int bufferSize = 10240 * 1024; // 1M
+			    BufferedWriter bw = new BufferedWriter(new FileWriter(file), bufferSize);
+				
+                ArrayList<String> header = new ArrayList<String>();
 				String query = request.getParameter("sparql");
+				String line = "";
 				Connection conn = VirtuosoDatabase.getConnection();
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery("sparql " + query); 	
 				
 	            ResultSetMetaData m = rs.getMetaData();
 	            int ccount = m.getColumnCount();
-
-	            Map<String, String> map = new HashMap<String, String>();
+	            
+	            for (int i = 1; i <= ccount; i++) {
+	                header.add(m.getColumnName(i));
+	            }
+	            System.out.println(StringUtils.join(header, separator)); 
+      			bw.write(StringUtils.join(header, separator) + "\n");
 
 	            while (rs.next()) {
+                    ArrayList<String> row = new ArrayList<String>();
 	                for (int i = 1; i <= ccount; i++) {
-	                  map.put(m.getColumnName(i),rs.getString(i)); 
+	                  row.add(rs.getString(i).replace("\n", "").replace("\r", "")); 
 	                }
-	            System.out.println(map.toString());
+	                line = StringUtils.join(row, separator);
+	                System.out.println(line);
+				    bw.write(line + "\n");
 	            }
 
+	            
+	            bw.close();
+	            
 	            rs.close();
 
 	            st.close();
