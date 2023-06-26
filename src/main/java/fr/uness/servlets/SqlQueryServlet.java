@@ -10,6 +10,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,6 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import java.util.UUID;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+
 //@WebServlet("/query")
 public class SqlQueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,7 +34,23 @@ public class SqlQueryServlet extends HttpServlet {
 				
 				UUID uuid = UUID.randomUUID();
 				String separator = "|";
-			    File file = new File("/data/" + uuid.toString() + ".csv");
+                String file = "/data/" + uuid.toString() + ".csv";
+				Path filePath = Paths.get(file);  
+			    
+			    Files.createFile(filePath);
+
+	            // Define the permissions
+	            Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+	            perms.add(PosixFilePermission.OWNER_READ);
+	            perms.add(PosixFilePermission.OWNER_WRITE);
+	            perms.add(PosixFilePermission.OWNER_EXECUTE);
+	            perms.add(PosixFilePermission.GROUP_READ);
+	            perms.add(PosixFilePermission.GROUP_WRITE);
+	            perms.add(PosixFilePermission.OTHERS_READ);
+	            
+	            // Set the permissions
+	            Files.setPosixFilePermissions(filePath, perms);
+			    
 			    int bufferSize = 10240 * 1024; // 1M
 			    BufferedWriter bw = new BufferedWriter(new FileWriter(file), bufferSize);
 				
