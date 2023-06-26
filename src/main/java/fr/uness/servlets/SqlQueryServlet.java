@@ -31,7 +31,11 @@ public class SqlQueryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 			try {
-				
+			    String token1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+				String token2 = request.getParameter("token");				
+			    
+				if (token2.equals(token1)) {
+					
 				UUID uuid = UUID.randomUUID();
 				String separator = "|";
                 String file = "/data/" + uuid.toString() + ".csv";
@@ -89,6 +93,11 @@ public class SqlQueryServlet extends HttpServlet {
 
 	            conn.close();
 
+				}
+				else {
+					
+					System.out.println("token not authorized");
+				}
 	            
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
