@@ -16,9 +16,9 @@ public final class VirtuosoDatabase {
 //        dataSource.setPortNumber(1111);
 //        dataSource.setServerName("localhost");
         dataSource.setUser("dba");
-        dataSource.setPassword("dba");
+        dataSource.setPassword("ontosides");
         dataSource.setPortNumber(1111);
-        dataSource.setServerName("virtuoso");
+        dataSource.setServerName("host.docker.internal");
         dataSource.setCharset("utf-8");
         dataSource.setLog_Enable(2);
         try {

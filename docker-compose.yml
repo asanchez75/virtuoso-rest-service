@@ -1,0 +1,52 @@
+version: '3.5'
+services:
+  tomcat:
+    build: tomcat/
+    restart: unless-stopped
+    tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    container_name: tomcat
+    networks:
+      - proxy
+    environment:
+      - CATALINA_OPTS="-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+        - ./target/:/target/
+        - apache2:/data
+
+#  virtuoso:
+#    image: openlink/virtuoso-opensource-7:7.2.9
+#    restart: unless-stopped
+#    networks:
+#     - sides
+#    environment:
+#      DBA_PASSWORD: "dba"
+#    volumes:
+#      - "./data:/database"
+#    ports:
+#      - "8890:8890"
+#      - "1111:1111"
+
+  apache2:
+    build: apache2/
+    networks:
+      - proxy
+    container_name: apache2
+    restart: unless-stopped
+    volumes:
+      - apache2:/var/www/html
+    ports:
+      - "127.0.0.1:89:80"
+
+volumes:
+  apache2:
+
+networks:
+   proxy:
+     external: true
+     name: proxy
+
+

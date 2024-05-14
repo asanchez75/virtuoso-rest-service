@@ -19,12 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import java.util.UUID;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 //@WebServlet("/query")
 public class SqlQueryServlet extends HttpServlet {
@@ -35,10 +37,17 @@ public class SqlQueryServlet extends HttpServlet {
 				String token2 = request.getParameter("token");				
 			    
 				if (token2.equals(token1)) {
-					
-				UUID uuid = UUID.randomUUID();
+                                // Get the current date and time
+                                LocalDateTime now = LocalDateTime.now();
+
+                                // Define the date and time format
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+
+                                // Format the current date and time
+                                String formattedDate = now.format(formatter);
+        
 				String separator = "|";
-                String file = "/data/" + uuid.toString() + ".csv";
+                String file = "/data/" + formattedDate + ".csv";
 				Path filePath = Paths.get(file);  
 			    
 			    Files.createFile(filePath);
